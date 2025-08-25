@@ -52,7 +52,10 @@ pipeline {
                 script {
                     echo 'Deploying to Minikube...'
                     sh '''
-                        export KUBECONFIG=/home/jenkins/.kube/config
+                        # Kubeconfig'i host dosyasını bozmadan kopyala ve onun üzerinde çalış
+                        mkdir -p /home/jenkins/.kube
+                        cp -f /home/jenkins/.kube/config /home/jenkins/.kube/config.jenkins
+                        export KUBECONFIG=/home/jenkins/.kube/config.jenkins
                         if grep -q "/home/cagri/.minikube" "$KUBECONFIG"; then
                           sed -i 's|/home/cagri|/home/jenkins|g' "$KUBECONFIG"
                         fi
@@ -106,7 +109,13 @@ pipeline {
                 script {
                     echo 'Performing health checks...'
                     sh '''
-                        export KUBECONFIG=/home/jenkins/.kube/config
+                        # Kubeconfig'i host dosyasını bozmadan kopyala ve onun üzerinde çalış
+                        mkdir -p /home/jenkins/.kube
+                        cp -f /home/jenkins/.kube/config /home/jenkins/.kube/config.jenkins
+                        export KUBECONFIG=/home/jenkins/.kube/config.jenkins
+                        if grep -q "/home/cagri/.minikube" "$KUBECONFIG"; then
+                          sed -i 's|/home/cagri|/home/jenkins|g' "$KUBECONFIG"
+                        fi
                         
                         # Backend health check
                         kubectl port-forward svc/backend-service 3000:3000 -n counter-app &
@@ -136,7 +145,14 @@ pipeline {
                 script {
                     echo 'Setting up port forwarding...'
                     sh '''
-                        export KUBECONFIG=/home/jenkins/.kube/config
+                        # Kubeconfig'i host dosyasını bozmadan kopyala ve onun üzerinde çalış
+                        mkdir -p /home/jenkins/.kube
+                        cp -f /home/jenkins/.kube/config /home/jenkins/.kube/config.jenkins
+                        export KUBECONFIG=/home/jenkins/.kube/config.jenkins
+                        if grep -q "/home/cagri/.minikube" "$KUBECONFIG"; then
+                          sed -i 's|/home/cagri|/home/jenkins|g' "$KUBECONFIG"
+                        fi
+                        
                         echo "Frontend service bilgileri:"
                         kubectl get svc frontend-service -n counter-app
                         
@@ -153,7 +169,14 @@ pipeline {
             echo 'Pipeline completed!'
             script {
                 sh '''
-                    export KUBECONFIG=/home/jenkins/.kube/config
+                    # Kubeconfig'i host dosyasını bozmadan kopyala ve onun üzerinde çalış
+                    mkdir -p /home/jenkins/.kube
+                    cp -f /home/jenkins/.kube/config /home/jenkins/.kube/config.jenkins
+                    export KUBECONFIG=/home/jenkins/.kube/config.jenkins
+                    if grep -q "/home/cagri/.minikube" "$KUBECONFIG"; then
+                      sed -i 's|/home/cagri|/home/jenkins|g' "$KUBECONFIG"
+                    fi
+                    
                     echo "=== DEPLOYMENT SUMMARY ==="
                     kubectl get all -n counter-app
                     echo ""
@@ -170,7 +193,14 @@ pipeline {
             echo 'Pipeline failed! ❌'
             script {
                 sh '''
-                    export KUBECONFIG=/home/jenkins/.kube/config
+                    # Kubeconfig'i host dosyasını bozmadan kopyala ve onun üzerinde çalış
+                    mkdir -p /home/jenkins/.kube
+                    cp -f /home/jenkins/.kube/config /home/jenkins/.kube/config.jenkins
+                    export KUBECONFIG=/home/jenkins/.kube/config.jenkins
+                    if grep -q "/home/cagri/.minikube" "$KUBECONFIG"; then
+                      sed -i 's|/home/cagri|/home/jenkins|g' "$KUBECONFIG"
+                    fi
+                    
                     echo "=== DEBUG INFO ==="
                     kubectl get pods -n counter-app
                     kubectl logs -l app=backend -n counter-app --tail=50 || true
