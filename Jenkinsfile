@@ -5,6 +5,7 @@ pipeline {
         DOCKER_REGISTRY = 'localhost:5000'
         APP_NAME = 'counter-app'
         NAMESPACE = 'counter-app'
+        MINIKUBE_IP = '192.168.49.2'
     }
     
     stages {
