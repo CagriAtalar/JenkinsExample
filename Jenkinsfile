@@ -51,6 +51,11 @@ pipeline {
                 script {
                     echo 'Deploying to Minikube...'
                     sh '''
+                        export KUBECONFIG=/home/jenkins/.kube/config
+                        if grep -q "/home/cagri/.minikube" "$KUBECONFIG"; then
+                          sed -i 's#/home/cagri#\/home\/jenkins#g' "$KUBECONFIG"
+                        fi
+                        
                         # Images'ları build et (zaten yapıldı)
                         echo "Images already built in previous stage"
                         
@@ -84,6 +89,8 @@ pipeline {
                 script {
                     echo 'Performing health checks...'
                     sh '''
+                        export KUBECONFIG=/home/jenkins/.kube/config
+                        
                         # Backend health check
                         kubectl port-forward svc/backend-service 3000:3000 -n counter-app &
                         PORT_FORWARD_PID=$!
@@ -128,6 +135,7 @@ pipeline {
             echo 'Pipeline completed!'
             script {
                 sh '''
+                    export KUBECONFIG=/home/jenkins/.kube/config
                     echo "=== DEPLOYMENT SUMMARY ==="
                     kubectl get all -n counter-app
                     echo ""
@@ -144,6 +152,7 @@ pipeline {
             echo 'Pipeline failed! ❌'
             script {
                 sh '''
+                    export KUBECONFIG=/home/jenkins/.kube/config
                     echo "=== DEBUG INFO ==="
                     kubectl get pods -n counter-app
                     kubectl logs -l app=backend -n counter-app --tail=50 || true
