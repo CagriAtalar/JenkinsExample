@@ -76,6 +76,14 @@ pipeline {
                         kubectl apply -f k8s/backend-deployment.yaml --validate=false
                         kubectl apply -f k8s/frontend-deployment.yaml --validate=false
                         
+                        # Yeni build edilen imajları deploy et
+                        kubectl set image deployment/frontend-deployment frontend=counter-frontend:${BUILD_NUMBER} -n counter-app
+                        kubectl set image deployment/backend-deployment backend=counter-backend:${BUILD_NUMBER} -n counter-app
+                        
+                        # Rollout durumunu bekle
+                        kubectl rollout status deployment/frontend-deployment -n counter-app
+                        kubectl rollout status deployment/backend-deployment -n counter-app
+                        
                         # Wait for deployments
                         kubectl wait --for=condition=available --timeout=300s deployment/postgres-deployment -n counter-app
                         kubectl wait --for=condition=available --timeout=300s deployment/backend-deployment -n counter-app
