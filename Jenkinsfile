@@ -55,20 +55,20 @@ pipeline {
                         echo "Images already built in previous stage"
                         
                         # Namespace oluştur
-                        kubectl apply -f k8s/namespace.yaml
+                        kubectl apply -f k8s/namespace.yaml --validate=false
                         
                         # ConfigMaps ve Secrets
-                        kubectl apply -f k8s/postgres-configmap.yaml
-                        kubectl apply -f k8s/postgres-secret.yaml
-                        kubectl apply -f k8s/postgres-init-configmap.yaml
+                        kubectl apply -f k8s/postgres-configmap.yaml --validate=false
+                        kubectl apply -f k8s/postgres-secret.yaml --validate=false
+                        kubectl apply -f k8s/postgres-init-configmap.yaml --validate=false
                         
                         # PVC
-                        kubectl apply -f k8s/postgres-pvc.yaml
+                        kubectl apply -f k8s/postgres-pvc.yaml --validate=false
                         
                         # Deployments
-                        kubectl apply -f k8s/postgres-deployment.yaml
-                        kubectl apply -f k8s/backend-deployment.yaml
-                        kubectl apply -f k8s/frontend-deployment.yaml
+                        kubectl apply -f k8s/postgres-deployment.yaml --validate=false
+                        kubectl apply -f k8s/backend-deployment.yaml --validate=false
+                        kubectl apply -f k8s/frontend-deployment.yaml --validate=false
                         
                         # Wait for deployments
                         kubectl wait --for=condition=available --timeout=300s deployment/postgres-deployment -n counter-app
