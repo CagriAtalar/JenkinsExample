@@ -51,12 +51,8 @@ pipeline {
                 script {
                     echo 'Deploying to Minikube...'
                     sh '''
-                        # Minikube docker environment kullan
-                        eval $(minikube docker-env)
-                        
-                        # Images'ları minikube'a yükle
-                        docker build -t counter-backend:latest ./backend
-                        docker build -t counter-frontend:latest ./frontend
+                        # Images'ları build et (zaten yapıldı)
+                        echo "Images already built in previous stage"
                         
                         # Namespace oluştur
                         kubectl apply -f k8s/namespace.yaml
