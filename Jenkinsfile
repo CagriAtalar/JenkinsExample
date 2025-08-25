@@ -76,6 +76,14 @@ pipeline {
                         kubectl apply -f k8s/backend-deployment.yaml --validate=false
                         kubectl apply -f k8s/frontend-deployment.yaml --validate=false
                         
+                        # Built images'ları Minikube Docker'ına yükle
+                        docker save counter-frontend:${BUILD_NUMBER} -o /tmp/counter-frontend-${BUILD_NUMBER}.tar
+                        docker save counter-backend:${BUILD_NUMBER} -o /tmp/counter-backend-${BUILD_NUMBER}.tar
+                        docker cp /tmp/counter-frontend-${BUILD_NUMBER}.tar minikube:/counter-frontend-${BUILD_NUMBER}.tar
+                        docker cp /tmp/counter-backend-${BUILD_NUMBER}.tar minikube:/counter-backend-${BUILD_NUMBER}.tar
+                        docker exec minikube docker load -i /counter-frontend-${BUILD_NUMBER}.tar
+                        docker exec minikube docker load -i /counter-backend-${BUILD_NUMBER}.tar
+                        
                         # Yeni build edilen imajları deploy et
                         kubectl set image deployment/frontend-deployment frontend=counter-frontend:${BUILD_NUMBER} -n counter-app
                         kubectl set image deployment/backend-deployment backend=counter-backend:${BUILD_NUMBER} -n counter-app
