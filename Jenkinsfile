@@ -53,7 +53,7 @@ pipeline {
                     sh '''
                         export KUBECONFIG=/home/jenkins/.kube/config
                         if grep -q "/home/cagri/.minikube" "$KUBECONFIG"; then
-                          sed -i 's#/home/cagri#\/home\/jenkins#g' "$KUBECONFIG"
+                          sed -i 's|/home/cagri|/home/jenkins|g' "$KUBECONFIG"
                         fi
                         
                         # Images'ları build et (zaten yapıldı)
