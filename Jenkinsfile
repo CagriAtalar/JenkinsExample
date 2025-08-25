@@ -5,6 +5,7 @@ pipeline {
         DOCKER_REGISTRY = 'localhost:5000'
         APP_NAME = 'counter-app'
         NAMESPACE = 'counter-app'
+        PATH = "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     }
     
     stages {
@@ -23,8 +24,8 @@ pipeline {
                             echo 'Building backend Docker image...'
                                                     sh '''
                             cd backend
-                            docker build -t counter-backend:${BUILD_NUMBER} .
-                            docker tag counter-backend:${BUILD_NUMBER} counter-backend:latest
+                            /usr/bin/docker build -t counter-backend:${BUILD_NUMBER} .
+                            /usr/bin/docker tag counter-backend:${BUILD_NUMBER} counter-backend:latest
                         '''
                         }
                     }
@@ -35,8 +36,8 @@ pipeline {
                             echo 'Building frontend Docker image...'
                                                     sh '''
                             cd frontend
-                            docker build -t counter-frontend:${BUILD_NUMBER} .
-                            docker tag counter-frontend:${BUILD_NUMBER} counter-frontend:latest
+                            /usr/bin/docker build -t counter-frontend:${BUILD_NUMBER} .
+                            /usr/bin/docker tag counter-frontend:${BUILD_NUMBER} counter-frontend:latest
                         '''
                         }
                     }
@@ -72,29 +73,29 @@ pipeline {
                         eval $(minikube docker-env)
                         
                         # Images'ları minikube'a yükle
-                        docker build -t counter-backend:latest ./backend
-                        docker build -t counter-frontend:latest ./frontend
+                        /usr/bin/docker build -t counter-backend:latest ./backend
+                        /usr/bin/docker build -t counter-frontend:latest ./frontend
                         
                         # Namespace oluştur
-                        kubectl apply -f k8s/namespace.yaml
+                        /usr/local/bin/kubectl apply -f k8s/namespace.yaml
                         
                         # ConfigMaps ve Secrets
-                        kubectl apply -f k8s/postgres-configmap.yaml
-                        kubectl apply -f k8s/postgres-secret.yaml
-                        kubectl apply -f k8s/postgres-init-configmap.yaml
+                        /usr/local/bin/kubectl apply -f k8s/postgres-configmap.yaml
+                        /usr/local/bin/kubectl apply -f k8s/postgres-secret.yaml
+                        /usr/local/bin/kubectl apply -f k8s/postgres-init-configmap.yaml
                         
                         # PVC
-                        kubectl apply -f k8s/postgres-pvc.yaml
+                        /usr/local/bin/kubectl apply -f k8s/postgres-pvc.yaml
                         
                         # Deployments
-                        kubectl apply -f k8s/postgres-deployment.yaml
-                        kubectl apply -f k8s/backend-deployment.yaml
-                        kubectl apply -f k8s/frontend-deployment.yaml
+                        /usr/local/bin/kubectl apply -f k8s/postgres-deployment.yaml
+                        /usr/local/bin/kubectl apply -f k8s/backend-deployment.yaml
+                        /usr/local/bin/kubectl apply -f k8s/frontend-deployment.yaml
                         
                         # Wait for deployments
-                        kubectl wait --for=condition=available --timeout=300s deployment/postgres-deployment -n counter-app
-                        kubectl wait --for=condition=available --timeout=300s deployment/backend-deployment -n counter-app
-                        kubectl wait --for=condition=available --timeout=300s deployment/frontend-deployment -n counter-app
+                        /usr/local/bin/kubectl wait --for=condition=available --timeout=300s deployment/postgres-deployment -n counter-app
+                        /usr/local/bin/kubectl wait --for=condition=available --timeout=300s deployment/backend-deployment -n counter-app
+                        /usr/local/bin/kubectl wait --for=condition=available --timeout=300s deployment/frontend-deployment -n counter-app
                     '''
                 }
             }
@@ -106,7 +107,7 @@ pipeline {
                     echo 'Performing health checks...'
                     sh '''
                         # Backend health check
-                        kubectl port-forward svc/backend-service 3000:3000 -n counter-app &
+                        /usr/local/bin/kubectl port-forward svc/backend-service 3000:3000 -n counter-app &
                         PORT_FORWARD_PID=$!
                         sleep 10
                         
@@ -122,7 +123,7 @@ pipeline {
                         kill $PORT_FORWARD_PID
                         
                         # Pod durumlarını kontrol et
-                        kubectl get pods -n counter-app
+                        /usr/local/bin/kubectl get pods -n counter-app
                     '''
                 }
             }
@@ -134,10 +135,10 @@ pipeline {
                     echo 'Setting up port forwarding...'
                     sh '''
                         echo "Frontend service bilgileri:"
-                        kubectl get svc frontend-service -n counter-app
+                        /usr/local/bin/kubectl get svc frontend-service -n counter-app
                         
                         echo "Port forwarding için komut:"
-                        echo "kubectl port-forward svc/frontend-service 8080:80 -n counter-app"
+                        echo "/usr/local/bin/kubectl port-forward svc/frontend-service 8080:80 -n counter-app"
                     '''
                 }
             }
@@ -150,10 +151,10 @@ pipeline {
             script {
                 sh '''
                     echo "=== DEPLOYMENT SUMMARY ==="
-                    kubectl get all -n counter-app
+                    /usr/local/bin/kubectl get all -n counter-app
                     echo ""
                     echo "Frontend'e erişim için:"
-                    echo "kubectl port-forward svc/frontend-service 8080:80 -n counter-app"
+                    echo "/usr/local/bin/kubectl port-forward svc/frontend-service 8080:80 -n counter-app"
                     echo "Sonra tarayıcıda: http://localhost:8080"
                 '''
             }
@@ -166,9 +167,9 @@ pipeline {
             script {
                 sh '''
                     echo "=== DEBUG INFO ==="
-                    kubectl get pods -n counter-app
-                    kubectl logs -l app=backend -n counter-app --tail=50 || true
-                    kubectl logs -l app=frontend -n counter-app --tail=50 || true
+                    /usr/local/bin/kubectl get pods -n counter-app
+                    /usr/local/bin/kubectl logs -l app=backend -n counter-app --tail=50 || true
+                    /usr/local/bin/kubectl logs -l app=frontend -n counter-app --tail=50 || true
                 '''
             }
         }
