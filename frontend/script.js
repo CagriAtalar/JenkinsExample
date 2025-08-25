@@ -1,10 +1,10 @@
 class CounterApp {
     constructor() {
-        this.apiUrl = 'http://172.27.108.39:3000/api';
+        this.apiUrl = '/api';
         this.counterValue = document.getElementById('counterValue');
         this.incrementBtn = document.getElementById('incrementBtn');
         this.status = document.getElementById('status');
-        
+
         this.init();
     }
 
@@ -17,11 +17,11 @@ class CounterApp {
         try {
             this.showStatus('Yükleniyor...', 'info');
             const response = await fetch(`${this.apiUrl}/counter`);
-            
+
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            
+
             const data = await response.json();
             this.counterValue.textContent = data.count;
             this.showStatus('', '');
@@ -35,7 +35,7 @@ class CounterApp {
         try {
             this.incrementBtn.disabled = true;
             this.showStatus('Artırılıyor...', 'info');
-            
+
             const response = await fetch(`${this.apiUrl}/counter/increment`, {
                 method: 'POST',
                 headers: {
@@ -50,7 +50,7 @@ class CounterApp {
             const data = await response.json();
             this.counterValue.textContent = data.count;
             this.showStatus('Başarılı!', 'success');
-            
+
             setTimeout(() => this.showStatus('', ''), 2000);
         } catch (error) {
             console.error('Error incrementing counter:', error);
