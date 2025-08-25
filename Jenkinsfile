@@ -58,7 +58,7 @@ pipeline {
                         fi
                         # Minikube API server'ına container içinden erişebilmek için server adresini güncelle
                         MINIKUBE_IP=${MINIKUBE_IP:-192.168.49.2}
-                        sed -i "s#server: https://127.0.0.1:[0-9]\+#server: https://$MINIKUBE_IP:8443#g" "$KUBECONFIG"
+                        sed -E -i "s#server: https://127.0.0.1:[0-9]+#server: https://$MINIKUBE_IP:8443#g" "$KUBECONFIG"
                         
                         # Images'ları build et (zaten yapıldı)
                         echo "Images already built in previous stage"
