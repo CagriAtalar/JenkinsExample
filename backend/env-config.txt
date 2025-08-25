@@ -1,0 +1,11 @@
+# .env dosyası için içerik - manuel olarak oluşturmanız gerekiyor
+# Database Configuration
+DB_USER=postgres
+DB_PASSWORD=password
+DB_HOST=postgres-service
+DB_NAME=counterdb
+DB_PORT=5432
+
+# Server Configuration
+PORT=3000
+NODE_ENV=production
