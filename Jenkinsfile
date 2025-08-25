@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label 'master'
-    }
+    agent any
     
     environment {
         DOCKER_REGISTRY = 'localhost:5000'
