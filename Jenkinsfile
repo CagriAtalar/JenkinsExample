@@ -120,6 +120,7 @@ pipeline {
                 script {
                     echo 'Setting up port forwarding...'
                     sh '''
+                        export KUBECONFIG=/home/jenkins/.kube/config
                         echo "Frontend service bilgileri:"
                         kubectl get svc frontend-service -n counter-app
                         
